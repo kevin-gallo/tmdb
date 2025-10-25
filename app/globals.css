@@ -48,79 +48,85 @@ body {
 }
 
 :root {
-  --radius: 0.625rem;
-  --background: oklch(1 0 0);
-  --foreground: oklch(0.145 0 0);
-  --card: oklch(1 0 0);
-  --card-foreground: oklch(0.145 0 0);
-  --popover: oklch(1 0 0);
-  --popover-foreground: oklch(0.145 0 0);
-  --primary: oklch(0.205 0 0);
-  --primary-foreground: oklch(0.985 0 0);
-  --secondary: oklch(0.97 0 0);
-  --secondary-foreground: oklch(0.205 0 0);
-  --muted: oklch(0.97 0 0);
-  --muted-foreground: oklch(0.556 0 0);
-  --accent: oklch(0.97 0 0);
-  --accent-foreground: oklch(0.205 0 0);
-  --destructive: oklch(0.577 0.245 27.325);
-  --border: oklch(0.922 0 0);
-  --input: oklch(0.922 0 0);
-  --ring: oklch(0.708 0 0);
-  --chart-1: oklch(0.646 0.222 41.116);
-  --chart-2: oklch(0.6 0.118 184.704);
-  --chart-3: oklch(0.398 0.07 227.392);
-  --chart-4: oklch(0.828 0.189 84.429);
-  --chart-5: oklch(0.769 0.188 70.08);
-  --sidebar: oklch(0.985 0 0);
-  --sidebar-foreground: oklch(0.145 0 0);
-  --sidebar-primary: oklch(0.205 0 0);
-  --sidebar-primary-foreground: oklch(0.985 0 0);
-  --sidebar-accent: oklch(0.97 0 0);
-  --sidebar-accent-foreground: oklch(0.205 0 0);
-  --sidebar-border: oklch(0.922 0 0);
-  --sidebar-ring: oklch(0.708 0 0);
+  /* === Existing shadcn-compatible tokens === */
+  --radius: 0.75rem;
+  --background: hsl(220 18% 8%);
+  --foreground: hsl(210 40% 98%);
+  --card: hsl(220 15% 12%);
+  --card-foreground: hsl(210 40% 98%);
+  --popover: hsl(220 15% 12%);
+  --popover-foreground: hsl(210 40% 98%);
+  --primary: hsl(217 91% 60%);
+  --primary-foreground: hsl(220 18% 8%);
+  --secondary: hsl(220 15% 18%);
+  --secondary-foreground: hsl(210 40% 98%);
+  --muted: hsl(220 15% 18%);
+  --muted-foreground: hsl(215 20% 65%);
+  --accent: hsl(262 83% 58%);
+  --accent-foreground: hsl(210 40% 98%);
+  --destructive: hsl(0 84% 60%);
+  --destructive-foreground: hsl(210 40% 98%);
+  --border: hsl(220 15% 20%);
+  --input: hsl(220 15% 18%);
+  --ring: hsl(217 91% 60%);
+
+  /* === Additional design tokens from Lovable AI === */
+  --gradient-hero: linear-gradient(135deg, hsl(220 18% 8%) 0%, hsl(220 15% 12%) 100%);
+  --gradient-card: linear-gradient(180deg, hsl(220 15% 12%) 0%, hsl(220 18% 10%) 100%);
+  --shadow-glow: 0 0 40px hsl(217 91% 60% / 0.2);
+  --shadow-card: 0 10px 40px -10px hsl(220 18% 5% / 0.8);
+  --transition-smooth: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
 }
 
 .dark {
-  --background: oklch(0.145 0 0);
-  --foreground: oklch(0.985 0 0);
-  --card: oklch(0.205 0 0);
-  --card-foreground: oklch(0.985 0 0);
-  --popover: oklch(0.205 0 0);
-  --popover-foreground: oklch(0.985 0 0);
-  --primary: oklch(0.922 0 0);
-  --primary-foreground: oklch(0.205 0 0);
-  --secondary: oklch(0.269 0 0);
-  --secondary-foreground: oklch(0.985 0 0);
-  --muted: oklch(0.269 0 0);
-  --muted-foreground: oklch(0.708 0 0);
-  --accent: oklch(0.269 0 0);
-  --accent-foreground: oklch(0.985 0 0);
-  --destructive: oklch(0.704 0.191 22.216);
-  --border: oklch(1 0 0 / 10%);
-  --input: oklch(1 0 0 / 15%);
-  --ring: oklch(0.556 0 0);
-  --chart-1: oklch(0.488 0.243 264.376);
-  --chart-2: oklch(0.696 0.17 162.48);
-  --chart-3: oklch(0.769 0.188 70.08);
-  --chart-4: oklch(0.627 0.265 303.9);
-  --chart-5: oklch(0.645 0.246 16.439);
-  --sidebar: oklch(0.205 0 0);
-  --sidebar-foreground: oklch(0.985 0 0);
-  --sidebar-primary: oklch(0.488 0.243 264.376);
-  --sidebar-primary-foreground: oklch(0.985 0 0);
-  --sidebar-accent: oklch(0.269 0 0);
-  --sidebar-accent-foreground: oklch(0.985 0 0);
-  --sidebar-border: oklch(1 0 0 / 10%);
-  --sidebar-ring: oklch(0.556 0 0);
+  /* Dark mode adjustments aligned to Lovable AI’s theme */
+  --background: hsl(220 18% 8%);
+  --foreground: hsl(210 40% 98%);
+  --card: hsl(220 15% 12%);
+  --card-foreground: hsl(210 40% 98%);
+  --popover: hsl(220 15% 12%);
+  --popover-foreground: hsl(210 40% 98%);
+  --primary: hsl(217 91% 60%);
+  --primary-foreground: hsl(220 18% 8%);
+  --secondary: hsl(220 15% 18%);
+  --secondary-foreground: hsl(210 40% 98%);
+  --muted: hsl(220 15% 18%);
+  --muted-foreground: hsl(215 20% 65%);
+  --accent: hsl(262 83% 58%);
+  --accent-foreground: hsl(210 40% 98%);
+  --destructive: hsl(0 84% 60%);
+  --border: hsl(220 15% 20%);
+  --input: hsl(220 15% 18%);
+  --ring: hsl(217 91% 60%);
 }
 
 @layer base {
   * {
     @apply border-border outline-ring/50;
   }
+
   body {
     @apply bg-background text-foreground;
+    background: var(--gradient-hero);
+    min-height: 100vh;
+  }
+}
+
+@layer components {
+  .movie-card {
+    @apply relative overflow-hidden rounded-xl bg-card transition-all duration-300;
+    @apply hover:scale-105 hover:shadow-[0_0_40px_hsl(217_91%_60%_/_0.3)];
+    box-shadow: var(--shadow-card);
+  }
+
+  .search-input {
+    @apply w-full rounded-full bg-secondary border-2 border-border px-6 py-4;
+    @apply text-lg text-foreground placeholder:text-muted-foreground;
+    @apply focus:outline-none focus:border-primary focus:shadow-[0_0_30px_hsl(217_91%_60%_/_0.3)];
+    transition: var(--transition-smooth);
+  }
+
+  .loading-skeleton {
+    @apply animate-pulse bg-secondary/50 rounded-xl;
   }
 }
