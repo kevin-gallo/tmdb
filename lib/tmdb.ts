@@ -6,10 +6,10 @@
  * @license MIT
  * @see {@link https://www.themoviedb.org/documentation/api|TMDB API Documentation}
  * @version 1.0.0
- * @return {Object} An object containing functions to interact with the TMDB API.
+ * @return {Object} Array of objects containing movie details.
  */
 
-export async function fetchMovies() {
+export async function fetchMovies(page: number = 1): Promise<any[]> {
     const baseUrl = process.env.NEXT_PUBLIC_TMDB_BASE_URL;
     const apiKey = process.env.NEXT_PUBLIC_TMDB_API_KEY;
 
@@ -17,29 +17,67 @@ export async function fetchMovies() {
         throw new Error("TMDB_BASE_URL and TMDB_API_KEY must be set in environment variables.");
     }
 
-    const url = `${baseUrl}/movie/popular?api_key=${apiKey}&language=en-US&page=1`;
+    const url = `${baseUrl}/movie/popular?api_key=${apiKey}&language=en-US&page=${page}`;
 
     try {
+        // await new Promise((resolve) => setTimeout(resolve, 1000)); // Simulate network delay
+
         const response = await fetch(url);
         if (!response.ok) {
             throw new Error(`HTTP error! status: ${response.status}`);
         }
 
         const data = await response.json();
-        const limit = 20; // Set the number of movies to return
-        const movies = data.results.slice(0, limit).map((movie: any) => ({
+        const movies = data.results.map((movie: any) => ({
             id: movie.id,
             title: movie.title,
             releaseDate: movie.release_date,
             posterUrl: movie.poster_path
-            ? `https://image.tmdb.org/t/p/w500${movie.poster_path}`
-            : null,
+                ? `https://image.tmdb.org/t/p/w500${movie.poster_path}`
+                : null,
         }));
 
         return movies;
 
     } catch (error) {
         console.error("Error fetching movies from TMDB:", error);
+        throw error;
+    }
+}
+
+export async function searchMovies( query: string, page: number = 1): Promise<any[]> {
+    const baseUrl = process.env.NEXT_PUBLIC_TMDB_BASE_URL;
+    const apiKey = process.env.NEXT_PUBLIC_TMDB_API_KEY;
+
+    if (!baseUrl || !apiKey) {
+        throw new Error("TMDB_BASE_URL and TMDB_API_KEY must be set in environment variables.");
+    }
+
+    const url = `${baseUrl}/search/movie?api_key=${apiKey}&language=en-US&query=${encodeURIComponent(query)}&page=${page}`;
+
+    try {
+        // await new Promise((resolve) => setTimeout(resolve, 1000)); // Simulate network delay
+
+        const response = await fetch(url);
+        if (!response.ok) {
+            throw new Error(`HTTP error! status: ${response.status}`);
+        }
+
+        const data = await response.json();
+        console.log('data: ', data)
+        const movies = data.results.map((movie: any) => ({
+            id: movie.id,
+            title: movie.title,
+            releaseDate: movie.release_date,
+            posterUrl: movie.poster_path
+                ? `https://image.tmdb.org/t/p/w500${movie.poster_path}`
+                : null,
+        }));
+
+        return movies;
+
+    } catch (error) {
+        console.error("Error searching movies from TMDB:", error);
         throw error;
     }
 }

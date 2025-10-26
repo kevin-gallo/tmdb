@@ -1,3 +1,8 @@
+import { useState } from "react";
+import Image from "next/image";
+
+// Assets
+import ImagePlaceholder from "@/public/images/default_movie_img.jpg";
 import { Calendar } from "lucide-react";
 
 interface MovieCardProps {
@@ -7,6 +12,7 @@ interface MovieCardProps {
 }
 
 export default function MovieCard({ title, releaseDate, posterUrl }: MovieCardProps) {
+  const [imgSrc, setImgSrc] = useState(posterUrl || ImagePlaceholder);
   const formattedDate = new Date(releaseDate).toLocaleDateString("en-US", {
     year: "numeric",
     month: "long",
@@ -16,11 +22,14 @@ export default function MovieCard({ title, releaseDate, posterUrl }: MovieCardPr
   return (
     <div className="movie-card group overflow-hidden h-[500px] flex flex-col animate-scale-in">
       <div className="relative overflow-hidden bg-secondary/30">
-        <img
-          src={posterUrl}
+        <Image
+          src={imgSrc}
           alt={title}
+          width={500}
+          height={750}
+          loading="eager"
           className="w-full h-full object-cover transition-transform duration-500 group-hover:scale-110"
-          loading="lazy"
+          onError={() => setImgSrc(ImagePlaceholder)}
         />
         <div className="absolute inset-0 bg-gradient-to-t from-black/80 via-black/20 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-300" />
       </div>

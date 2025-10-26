@@ -1,7 +1,7 @@
 'use client';
 
-import { useState, useEffect } from "react";
-import { fetchMovies } from "@/lib/tmdb";
+import { useState, useEffect, useRef, useCallback } from "react";
+import { fetchMovies, searchMovies } from "@/lib/tmdb";
 
 // Components
 import SearchBar from "@/components/SearchBar";
@@ -24,59 +24,127 @@ const fadeIn = {
 export default function Home() {
   const [movies, setMovies] = useState<any[]>([]);
   const [isLoading, setIsLoading] = useState(false);
-  const [hasSearched, setHasSearched] = useState(false);
+  const [hasMore, setHasMore] = useState(true);
+  const [page, setPage] = useState(1);
+  const [query, setQuery] = useState("");
+  const loaderRef = useRef<HTMLDivElement | null>(null);
 
+  const isSearching = query.trim().length > 0;
+
+  const loadMovies = useCallback(async () => {
+    if (isLoading || !hasMore) return;
+    setIsLoading(true);
+
+    try {
+      const fetchedMovies = isSearching ? await searchMovies(query, page) : await fetchMovies(page);
+      if (fetchedMovies.length === 0) {
+        setHasMore(false);
+      } else {
+        setMovies((prevMovies) => {
+          const combined = [...prevMovies, ...fetchedMovies];
+          const unique = Array.from(new Map(combined.map(m => [m.id, m])).values());
+          return unique;
+        });
+
+        setPage((prevPage) => prevPage + 1);
+      }
+
+    } catch (error) {
+      console.error("Failed to fetch movies:", error);
+    } finally {
+      setIsLoading(false);
+    }
+  }, [page, isLoading, hasMore, isSearching, query]);
+
+
+
+  // ✅ Initial popular movies load
   useEffect(() => {
-    const loadMovies = async () => {
-      setIsLoading(true);
+    if (!isSearching && movies.length === 0) {
+      loadMovies();
+    }
+  }, [isSearching, loadMovies]);
+
+  // ✅ Infinite scroll observer
+  useEffect(() => {
+    if (!loaderRef.current || isLoading || movies.length === 0) return;
+
+    const observer = new IntersectionObserver(
+      (entries) => {
+        const [entry] = entries;
+        // only trigger when element is fully visible and user has scrolled down
+        if (entry.isIntersecting && hasMore && !isLoading) {
+          loadMovies();
+        }
+      },
+      {
+        root: null, // viewport
+        rootMargin: "0px", // no early trigger
+        threshold: 1.0, // only fire when loader is fully visible
+      }
+    );
+    
+    observer.observe(loaderRef.current);
+
+    return () => observer.disconnect();
+
+  }, [hasMore, isLoading, loadMovies]);
+
+  const handleSearch = (newQuery: string) => {
+    setQuery(newQuery);
+    setPage(1);
+    setMovies([]);
+    setHasMore(true);
+
+    if (newQuery.trim() === "") {
+      (async () => {
+        setIsLoading(true);
+        try {
+          const popularMovies = await fetchMovies(1);
+          setMovies(popularMovies);
+        } catch (error) {
+          console.error("Failed to load popular movies:", error);
+        } finally {
+          setIsLoading(false);
+        }
+      })();
+      return;
+    }
+
+    setIsLoading(true);
+
+    (async () => {
       try {
-        const fetchedMovies = await fetchMovies();
-        setMovies(fetchedMovies);
+        const searchedMovies = await searchMovies(newQuery, 1);
+        setMovies(searchedMovies);
+        if (searchedMovies.length === 0) {
+          setHasMore(false);
+        }
       } catch (error) {
-        console.error("Failed to fetch movies:", error);
+        console.error("Failed to search movies:", error);
       } finally {
         setIsLoading(false);
       }
-    };
-    loadMovies();
-  }, []);
-
-  const handleSearch = (query: string) => {
-    setIsLoading(true);
-    setHasSearched(true);
-
-    setTimeout(() => {
-      setMovies([]);
-      setIsLoading(false);
-    }, 1500);
+    }) ();
   };
 
-  return (
-    <div className="min-h-screen px-6 pt-6 pb-20 md:px-20 relative overflow-hidden">
-      {/* Floating Background Lights */}
-      <div className="absolute inset-0 pointer-events-none">
-        <motion.div
-          className="absolute top-1/4 left-1/4 w-72 h-72 bg-primary/10 rounded-full blur-3xl"
-          animate={{ y: [-20, 20, -20] }}
-          transition={{ duration: 8, repeat: Infinity, ease: "easeInOut" }}
-        />
-        <motion.div
-          className="absolute bottom-1/3 right-1/4 w-96 h-96 bg-secondary/10 rounded-full blur-3xl"
-          animate={{ y: [10, -15, 10] }}
-          transition={{ duration: 10, repeat: Infinity, ease: "easeInOut", delay: 1.5 }}
-        />
-      </div>
+  const isInitialLoad = movies.length === 0 && isLoading;
 
-      {/* Header */}
-      <motion.div variants={fadeIn} initial="hidden" animate="visible">
+  return (
+    <>
+       {/* Header */}
+      <motion.div variants={fadeIn} initial="hidden" animate="visible" className="sticky top-0 z-50">
         <Header />
       </motion.div>
+      <div className="min-h-screen px-6 pt-6 pb-20 md:px-20 relative">
 
       {/* Search Section */}
       <motion.div variants={fadeIn} initial="hidden" animate="visible" className="mb-16 relative z-10">
         <SearchBar onSearch={handleSearch} isLoading={isLoading} />
         <p className="text-base text-center text-muted-foreground mt-2">
-          Search through millions of movies and discover your next favorite film
+          {isSearching
+            ? `Results for “${query}”`
+            : "Search through millions of movies and discover your next favorite film"}
         </p>
       </motion.div>
 
@@ -88,9 +156,9 @@ export default function Home() {
           </h2>
         </div>
 
-        {/* Movie Grid */}
+      {/* Movie Grid */}
         <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-4 md:gap-6">
-          {isLoading
+          {isInitialLoad
             ? Array.from({ length: 8 }).map((_, i) => (
                 <motion.div key={i} variants={fadeIn} initial="hidden" animate="visible">
                   <MovieCardLoader />
@@ -114,6 +182,23 @@ export default function Home() {
               ))}
         </div>
       </motion.div>
+
+      {/* Infinite Scroll Loader */}
+      <div ref={loaderRef} className="mt-12 mb-24">
+        {!isInitialLoad && isLoading && (
+          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-4 md:gap-6">
+            {Array.from({ length: 8 }).map((_, i) => (
+              <MovieCardLoader key={`loader-${i}`} />
+            ))}
+          </div>
+        )}
+        {!hasMore && (
+          <p className="text-muted-foreground text-center mt-6">
+            No movies found. 🎬
+          </p>
+        )}
+      </div>
     </div>
+    </>
   );
 }

@@ -1,5 +1,5 @@
 import { Search } from "lucide-react";
-import { useState } from "react";
+import { useState, useEffect, useRef } from "react";
 
 interface SearchBarProps {
   onSearch: (query: string) => void;
@@ -8,13 +8,27 @@ interface SearchBarProps {
 
 const SearchBar = ({ onSearch, isLoading }: SearchBarProps) => {
   const [query, setQuery] = useState("");
-
+  const isMounted = useRef(false);
+  
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
-    if (query.trim()) {
-      onSearch(query);
-    }
+    onSearch(query);
   };
+
+  useEffect(() => {
+    if (!isMounted.current) {
+      isMounted.current = true;
+      return;
+    }
+
+    const delay = setTimeout(() => {
+      if(query.trim() === "") {
+        onSearch("");
+      }
+    }, 1000);
+
+    return () => clearTimeout(delay);
+  }, [query]);
 
   return (
     <form onSubmit={handleSubmit} className="w-full max-w-3xl mx-auto animate-fade-in my-4">
@@ -30,7 +44,7 @@ const SearchBar = ({ onSearch, isLoading }: SearchBarProps) => {
         <button
           type="submit"
           disabled={isLoading}
-          className="absolute right-2 top-1/2 -translate-y-1/2 p-3 rounded-full bg-primary text-primary-foreground hover:bg-primary/90 disabled:opacity-50 disabled:cursor-not-allowed transition-all duration-300 hover:shadow-glow"
+          className="absolute cursor-pointer right-2 top-1/2 -translate-y-1/2 p-3 rounded-full bg-primary text-primary-foreground hover:bg-primary/90 disabled:opacity-50 disabled:cursor-not-allowed transition-all duration-300 hover:shadow-glow"
         >
           <Search className="w-5 h-5" />
         </button>
