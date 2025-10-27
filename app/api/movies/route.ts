@@ -35,7 +35,7 @@ export async function GET(request: Request) {
         const data = await res.json();
         const movies = data.results;
 
-        await redis.set(cacheKey, movies, { ex: CACHE_TTL });
+        await redis.set(cacheKey, JSON.stringify(movies), { ex: CACHE_TTL });
 
         return NextResponse.json({ movies: data.results });
     } catch (error) {
