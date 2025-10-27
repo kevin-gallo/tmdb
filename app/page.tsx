@@ -37,7 +37,7 @@ export default function Home() {
 
     try {
       const fetchedMovies = isSearching ? await searchMovies(query, page) : await fetchMovies(page);
-      if (fetchedMovies.length === 0) {
+      if (!fetchedMovies || fetchedMovies.length === 0) {
         setHasMore(false);
       } else {
         setMovies((prevMovies) => {
@@ -101,7 +101,7 @@ export default function Home() {
         setIsLoading(true);
         try {
           const popularMovies = await fetchMovies(1);
-          setMovies(popularMovies);
+          setMovies(popularMovies || []);
         } catch (error) {
           console.error("Failed to load popular movies:", error);
         } finally {
@@ -116,8 +116,8 @@ export default function Home() {
     (async () => {
       try {
         const searchedMovies = await searchMovies(newQuery, 1);
-        setMovies(searchedMovies);
-        if (searchedMovies.length === 0) {
+        setMovies(searchedMovies || []);
+        if ((searchedMovies || []).length === 0) {
           setHasMore(false);
         }
       } catch (error) {
@@ -151,7 +151,7 @@ export default function Home() {
       {/* Results Section */}
       <motion.div variants={fadeIn} initial="hidden" animate="visible" className="space-y-8 relative z-10">
         <div className="flex items-center justify-between">
-          <h2 className="text-2xl md:text-3xl font-semibold">
+          <h2 className="text-xl text-primary font-semibold">
             {isLoading ? "Loading..." : `Found ${movies.length} movies`}
           </h2>
         </div>

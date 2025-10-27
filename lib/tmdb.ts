@@ -9,22 +9,23 @@
  * @return {Object} Array of objects containing movie details.
  */
 
-export async function fetchMovies(page: number = 1): Promise<any[]> {
+export async function fetchMovies(page: number = 1): Promise<any[] | undefined> {
     const baseUrl = process.env.NEXT_PUBLIC_TMDB_BASE_URL;
     const apiKey = process.env.NEXT_PUBLIC_TMDB_API_KEY;
 
     if (!baseUrl || !apiKey) {
-        throw new Error("TMDB_BASE_URL and TMDB_API_KEY must be set in environment variables.");
+        console.error('TMDB_BASE_URL and TMDB_API_KEY must be set in environment variables. ')
+        return []; // Return an empty array if baseUrl or apiKey is not set
     }
 
     const url = `${baseUrl}/movie/popular?api_key=${apiKey}&language=en-US&page=${page}`;
 
     try {
-        // await new Promise((resolve) => setTimeout(resolve, 1000)); // Simulate network delay
+        await new Promise((resolve) => setTimeout(resolve, 1000)); // Simulate network delay
 
         const response = await fetch(url);
         if (!response.ok) {
-            throw new Error(`HTTP error! status: ${response.status}`);
+            console.log('response status: ', response.status)
         }
 
         const data = await response.json();
@@ -41,30 +42,41 @@ export async function fetchMovies(page: number = 1): Promise<any[]> {
 
     } catch (error) {
         console.error("Error fetching movies from TMDB:", error);
-        throw error;
     }
 }
 
-export async function searchMovies( query: string, page: number = 1): Promise<any[]> {
+/**
+ * TMDB API interaction module
+ * Provides functions to fetch movie data from The Movie Database (TMDB) API.
+ * @module tmdb
+ * @author Harrie Kevin Gallo
+ * @license MIT
+ * @see {@link https://www.themoviedb.org/documentation/api|TMDB API Documentation}
+ * @param query 
+ * @param page 
+ * @returns Array of movie objects matching the search query.
+ */
+
+export async function searchMovies( query: string, page: number = 1): Promise<any[] | undefined> {
     const baseUrl = process.env.NEXT_PUBLIC_TMDB_BASE_URL;
     const apiKey = process.env.NEXT_PUBLIC_TMDB_API_KEY;
 
     if (!baseUrl || !apiKey) {
-        throw new Error("TMDB_BASE_URL and TMDB_API_KEY must be set in environment variables.");
+        console.error('TMDB_BASE_URL and TMDB_API_KEY must be set in environment variables. ')
+        return [];
     }
 
     const url = `${baseUrl}/search/movie?api_key=${apiKey}&language=en-US&query=${encodeURIComponent(query)}&page=${page}`;
 
     try {
-        // await new Promise((resolve) => setTimeout(resolve, 1000)); // Simulate network delay
+        await new Promise((resolve) => setTimeout(resolve, 1000)); // Simulate network delay
 
         const response = await fetch(url);
         if (!response.ok) {
-            throw new Error(`HTTP error! status: ${response.status}`);
+            console.error('response status: ', response.status)
         }
 
         const data = await response.json();
-        console.log('data: ', data)
         const movies = data.results.map((movie: any) => ({
             id: movie.id,
             title: movie.title,
@@ -78,6 +90,5 @@ export async function searchMovies( query: string, page: number = 1): Promise<an
 
     } catch (error) {
         console.error("Error searching movies from TMDB:", error);
-        throw error;
     }
 }
