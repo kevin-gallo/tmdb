@@ -21,7 +21,7 @@ export async function fetchMovies(page: number = 1): Promise<any[] | undefined> 
     const url = `${baseUrl}/movie/popular?api_key=${apiKey}&language=en-US&page=${page}`;
 
     try {
-        await new Promise((resolve) => setTimeout(resolve, 1000)); // Simulate network delay
+        // await new Promise((resolve) => setTimeout(resolve, 1000)); // Simulate network delay
 
         const response = await fetch(url);
         if (!response.ok) {
@@ -69,7 +69,7 @@ export async function searchMovies( query: string, page: number = 1): Promise<an
     const url = `${baseUrl}/search/movie?api_key=${apiKey}&language=en-US&query=${encodeURIComponent(query)}&page=${page}`;
 
     try {
-        await new Promise((resolve) => setTimeout(resolve, 1000)); // Simulate network delay
+        // await new Promise((resolve) => setTimeout(resolve, 1000)); // Simulate network delay
 
         const response = await fetch(url);
         if (!response.ok) {
