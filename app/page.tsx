@@ -58,14 +58,14 @@ export default function Home() {
 
 
 
-  // ✅ Initial popular movies load
+  // Initial popular movies load
   useEffect(() => {
     if (!isSearching && movies.length === 0) {
       loadMovies();
     }
   }, [isSearching, loadMovies]);
 
-  // ✅ Infinite scroll observer
+  // Infinite scroll observer
   useEffect(() => {
     if (!loaderRef.current || isLoading || movies.length === 0) return;
 
@@ -125,7 +125,7 @@ export default function Home() {
       } finally {
         setIsLoading(false);
       }
-    }) ();
+    })();
   };
 
   const isInitialLoad = movies.length === 0 && isLoading;

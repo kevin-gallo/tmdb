@@ -6,7 +6,7 @@
  * @license MIT
  * @see {@link https://www.themoviedb.org/documentation/api|TMDB API Documentation}
  * @version 1.0.0
- * @return {Object} Array of objects containing movie details.
+ * @return {Array - Object || any[]} Array of objects containing movie details.
  */
 
 export async function fetchMovies(page: number = 1): Promise<any[] | undefined> {
@@ -46,14 +46,8 @@ export async function fetchMovies(page: number = 1): Promise<any[] | undefined> 
 }
 
 /**
- * TMDB API interaction module
- * Provides functions to fetch movie data from The Movie Database (TMDB) API.
- * @module tmdb
- * @author Harrie Kevin Gallo
- * @license MIT
- * @see {@link https://www.themoviedb.org/documentation/api|TMDB API Documentation}
- * @param query 
- * @param page 
+ * @param query {string} query - The search term to filter movies.
+ * @param page {number} [page=1] - The page number for pagination (default is 1).
  * @returns Array of movie objects matching the search query.
  */
 
