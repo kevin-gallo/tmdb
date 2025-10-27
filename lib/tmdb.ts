@@ -10,26 +10,16 @@
  */
 
 export async function fetchMovies(page: number = 1): Promise<any[] | undefined> {
-    const baseUrl = process.env.NEXT_PUBLIC_TMDB_BASE_URL;
-    const apiKey = process.env.NEXT_PUBLIC_TMDB_API_KEY;
-
-    if (!baseUrl || !apiKey) {
-        console.error('TMDB_BASE_URL and TMDB_API_KEY must be set in environment variables. ')
-        return []; // Return an empty array if baseUrl or apiKey is not set
-    }
-
-    const url = `${baseUrl}/movie/popular?api_key=${apiKey}&language=en-US&page=${page}`;
-
     try {
         // await new Promise((resolve) => setTimeout(resolve, 1000)); // Simulate network delay
-
+        const url = `/api/movies?page=${page}`;
         const response = await fetch(url);
         if (!response.ok) {
             console.log('response status: ', response.status)
         }
 
         const data = await response.json();
-        const movies = data.results.map((movie: any) => ({
+        const movies = data?.movies?.map((movie: any) => ({
             id: movie.id,
             title: movie.title,
             releaseDate: movie.release_date,
@@ -52,15 +42,8 @@ export async function fetchMovies(page: number = 1): Promise<any[] | undefined> 
  */
 
 export async function searchMovies( query: string, page: number = 1): Promise<any[] | undefined> {
-    const baseUrl = process.env.NEXT_PUBLIC_TMDB_BASE_URL;
-    const apiKey = process.env.NEXT_PUBLIC_TMDB_API_KEY;
 
-    if (!baseUrl || !apiKey) {
-        console.error('TMDB_BASE_URL and TMDB_API_KEY must be set in environment variables. ')
-        return [];
-    }
-
-    const url = `${baseUrl}/search/movie?api_key=${apiKey}&language=en-US&query=${encodeURIComponent(query)}&page=${page}`;
+    const url = `/api/movies?query=${encodeURIComponent(query)}&page=${page}`;
 
     try {
         // await new Promise((resolve) => setTimeout(resolve, 1000)); // Simulate network delay
@@ -71,7 +54,7 @@ export async function searchMovies( query: string, page: number = 1): Promise<an
         }
 
         const data = await response.json();
-        const movies = data.results.map((movie: any) => ({
+        const movies = data?.movies?.map((movie: any) => ({
             id: movie.id,
             title: movie.title,
             releaseDate: movie.release_date,
