@@ -19,7 +19,7 @@ export async function fetchMovies(page: number = 1): Promise<any[] | undefined> 
         }
 
         const data = await response.json();
-        const movies = data?.movies?.map((movie: any) => ({
+        const movies = (data?.movies || []).map((movie: any) => ({
             id: movie.id,
             title: movie.title,
             releaseDate: movie.release_date,
@@ -54,7 +54,7 @@ export async function searchMovies( query: string, page: number = 1): Promise<an
         }
 
         const data = await response.json();
-        const movies = data?.movies?.map((movie: any) => ({
+        const movies = (data?.movies || []).map((movie: any) => ({
             id: movie.id,
             title: movie.title,
             releaseDate: movie.release_date,

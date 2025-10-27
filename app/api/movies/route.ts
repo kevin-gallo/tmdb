@@ -15,7 +15,7 @@ export async function GET(request: Request) {
 
     try {
         const cached = await redis.get(cacheKey);
-        if(cached) {
+        if (cached) {
             console.log('Serving from cache:', cacheKey);
             return NextResponse.json({ movies: cached });
         }
@@ -28,12 +28,12 @@ export async function GET(request: Request) {
 
         const res = await fetch(endPoint);
         
-        if(!res.ok) {
+        if (!res.ok) {
             return NextResponse.json({ error: "Failed to fetch movies" }, { status: res.status });
         }
 
         const data = await res.json();
-        const movies = JSON.stringify(data.results);
+        const movies = data.results;
 
         await redis.set(cacheKey, movies, { ex: CACHE_TTL });
 
