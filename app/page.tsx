@@ -11,6 +11,7 @@ import MovieCardLoader from "@/components/MovieCardLoader";
 
 // Animation
 import { motion } from "framer-motion";
+import ScrollToTop from "@/components/ScrollToTop";
 
 const fadeIn = {
   hidden: { opacity: 0, y: 20 },
@@ -136,7 +137,7 @@ export default function Home() {
       <motion.div variants={fadeIn} initial="hidden" animate="visible" className="sticky top-0 z-50">
         <Header />
       </motion.div>
-      <div className="min-h-screen px-6 pt-6 pb-20 md:px-20 relative">
+      <div className="min-h-screen px-6 pt-10 pb-20 md:px-20 relative">
 
       {/* Search Section */}
       <motion.div variants={fadeIn} initial="hidden" animate="visible" className="mb-16 relative z-10">
@@ -199,6 +200,7 @@ export default function Home() {
         )}
       </div>
     </div>
+    <ScrollToTop />
     </>
   );
 }

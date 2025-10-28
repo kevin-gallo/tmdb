@@ -6,12 +6,14 @@ interface SearchBarProps {
   isLoading?: boolean;
 }
 
-const SearchBar = ({ onSearch, isLoading }: SearchBarProps) => {
+export default function SearchBar ({ onSearch, isLoading }: SearchBarProps) {
   const [query, setQuery] = useState("");
   const isMounted = useRef(false);
+  const typingTimeout = useRef<NodeJS.Timeout | null>(null);
   
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
+    if(typingTimeout.current) clearTimeout(typingTimeout.current);
     onSearch(query);
   };
 
@@ -20,6 +22,23 @@ const SearchBar = ({ onSearch, isLoading }: SearchBarProps) => {
       isMounted.current = true;
       return;
     }
+
+    if(typingTimeout.current) clearTimeout(typingTimeout.current);
+
+    typingTimeout.current = setTimeout(() => {
+      const trimmedQuery = query.trim();
+      
+      if (trimmedQuery !== "" || trimmedQuery.length > 0) {
+        onSearch(trimmedQuery);
+      } else {
+        onSearch("");
+      }
+
+      return () => {
+        if(typingTimeout.current) clearTimeout(typingTimeout.current);
+      }
+
+    }, 1000);
 
     const delay = setTimeout(() => {
       if(query.trim() === "") {
@@ -31,7 +50,7 @@ const SearchBar = ({ onSearch, isLoading }: SearchBarProps) => {
   }, [query]);
 
   return (
-    <form onSubmit={handleSubmit} className="w-full max-w-3xl mx-auto animate-fade-in my-4">
+    <form onSubmit={handleSubmit} className="w-full max-w-3xl mx-auto animate-fade-in">
       <div className="relative">
         <input
           type="text"
@@ -52,5 +71,3 @@ const SearchBar = ({ onSearch, isLoading }: SearchBarProps) => {
     </form>
   );
 };
-
-export default SearchBar;
